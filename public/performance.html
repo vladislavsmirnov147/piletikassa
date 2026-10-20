@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piletikassa – CSS-i jõudlus</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 2rem;
+        }
+
+        button {
+            padding: 0.75rem 1rem;
+            margin: 0.25rem;
+            cursor: pointer;
+        }
+
+        #results {
+            white-space: pre-wrap;
+            font-family: monospace;
+            line-height: 1.8;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+            gap: 1rem;
+        }
+
+        .card {
+            padding: 1rem;
+            border: 1px solid #aaa;
+            border-radius: 0.5rem;
+        }
+
+        .optimized .card {
+            content-visibility: auto;
+            contain-intrinsic-size: auto 180px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>CSS-i jõudluse mõõtmine</h1>
+
+    <p>5000 kaardi paigutuse ja CSS-valijate võrdlus.</p>
+
+    <button id="normal">Ilma optimeerimiseta</button>
+    <button id="optimized">Content-visibility: auto</button>
+    <button id="selectors">Mõõda CSS-valijaid</button>
+
+    <p id="results" aria-live="polite"></p>
+
+    <div id="cards" class="cards"></div>
+
+    <script>
+        const container = document.getElementById("cards");
+        const results = document.getElementById("results");
+
+        for (let i = 1; i <= 5000; i++) {
+            const card = document.createElement("article");
+            card.className = "card";
+            card.innerHTML = `
+                <h2>Üritus ${i}</h2>
+                <p>Kuupäev: 2026-11-15</p>
+                <p>Koht: Tallinn</p>
+                <p>Vabu kohti: 12</p>
+            `;
+            container.appendChild(card);
+        }
+
+        async function measure(optimized) {
+            container.classList.toggle("optimized", optimized);
+
+            await new Promise(resolve => requestAnimationFrame(() => {
+                requestAnimationFrame(resolve);
+            }));
+
+            const start = performance.now();
+
+            for (const card of container.children) {
+                card.getBoundingClientRect();
+            }
+
+            const duration = performance.now() - start;
+            const label = optimized
+                ? "Content-visibility: auto"
+                : "Ilma optimeerimiseta";
+
+            results.textContent =
+                `${label}: ${duration.toFixed(2)} ms`;
+        }
+
+        function measureSelector(selector) {
+            const repetitions = 30;
+            const start = performance.now();
+            let count = 0;
+
+            for (let i = 0; i < repetitions; i++) {
+                count += container.querySelectorAll(selector).length;
+            }
+
+            return (performance.now() - start) / repetitions;
+        }
+
+        function measureSelectors() {
+            const selectors = [
+                ".card",
+                "div",
+                "* p",
+                "#cards .card p"
+            ];
+
+            selectors.forEach(selector => {
+                measureSelector(selector);
+            });
+
+            const measurements = selectors.map(selector => {
+                return {
+                    selector,
+                    time: measureSelector(selector)
+                };
+            });
+
+            results.textContent =
+                "CSS-valijate mõõtmine:\n\n" +
+                measurements.map(item =>
+                    `${item.selector}: ${item.time.toFixed(2)} ms`
+                ).join("\n");
+        }
+
+        document.getElementById("normal").addEventListener("click", () => {
+            measure(false);
+        });
+
+        document.getElementById("optimized").addEventListener("click", () => {
+            measure(true);
+        });
+
+        document.getElementById("selectors").addEventListener("click", () => {
+            measureSelectors();
+        });
+    </script>
+
+</body>
+</html>
