@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C03 Ex3 - DOM mõõtmised</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 24px;
+        }
+
+        button {
+            padding: 10px;
+            margin: 5px;
+        }
+
+        #results {
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>DOM - 2000 rea mõõtmine</h1>
+
+    <button id="measure">Mõõda kolm meetodit</button>
+    <button id="collections">Võrdle kollektsioone</button>
+
+    <pre id="results"></pre>
+    <ul id="test-list"></ul>
+
+    <script>
+        const output = document.querySelector('#results');
+        const host = document.querySelector('#test-list');
+
+        const createRow = (i) => {
+            const li = document.createElement('li');
+            li.className = 'test-row';
+            li.textContent = `Sündmus ${i + 1}`;
+            return li;
+        };
+
+        document.querySelector('#measure').addEventListener('click', () => {
+            const count = 2000;
+            const times = [];
+
+            host.replaceChildren();
+
+            let start = performance.now();
+
+            for (let i = 0; i < count; i++) {
+                host.appendChild(createRow(i));
+            }
+
+            times.push(['tsüklis appendChild', performance.now() - start]);
+
+            host.replaceChildren();
+
+            const rows = Array.from({ length: count }, (_, i) => createRow(i));
+
+            start = performance.now();
+            host.replaceChildren(...rows);
+
+            times.push(['replaceChildren', performance.now() - start]);
+
+            host.replaceChildren();
+
+            const fragment = document.createDocumentFragment();
+
+            start = performance.now();
+
+            for (let i = 0; i < count; i++) {
+                fragment.appendChild(createRow(i));
+            }
+
+            host.appendChild(fragment);
+
+            times.push(['DocumentFragment', performance.now() - start]);
+
+            output.textContent =
+                'Nimekirja renderdamine - 2000 rida\n\n' +
+                times.map(([name, ms]) => `${name}: ${ms.toFixed(2)} ms`).join('\n');
+        });
+
+        document.querySelector('#collections').addEventListener('click', () => {
+            host.replaceChildren();
+
+            for (let i = 0; i < 10; i++) {
+                host.appendChild(createRow(i));
+            }
+
+            const live = host.getElementsByClassName('test-row');
+            const staticRows = host.querySelectorAll('.test-row');
+
+            let liveRemoved = 0;
+
+            for (let i = 0; i < live.length; i++) {
+                live[i].remove();
+                liveRemoved++;
+            }
+
+            const liveLeft = host.children.length;
+
+            host.replaceChildren();
+
+            for (let i = 0; i < 10; i++) {
+                host.appendChild(createRow(i));
+            }
+
+            let staticRemoved = 0;
+
+            for (const item of host.querySelectorAll('.test-row')) {
+                item.remove();
+                staticRemoved++;
+            }
+
+            const staticLeft = host.children.length;
+
+            output.textContent =
+                'Elav ja staatiline kollektsioon\n\n' +
+                `Elav getElementsByClassName: eemaldas ${liveRemoved}, jäi alles ${liveLeft}\n` +
+                `Staatiline querySelectorAll: eemaldas ${staticRemoved}, jäi alles ${staticLeft}\n` +
+                `Algse staatilise kollektsiooni pikkus: ${staticRows.length}`;
+        });
+    </script>
+</body>
+</html>

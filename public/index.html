@@ -18,19 +18,19 @@
     </header>
 
     <nav aria-label="Peamenüü">
-        <a href="#events">Üritused</a>
+        <a href="#events-section">Üritused</a>
         <a href="#featured">Esiletõstetud</a>
         <a href="#search">Otsing</a>
+        <a href="#dynamic-events">Dünaamiline nimekiri</a>
     </nav>
 
     <main id="main-content">
 
-        <section id="events" aria-labelledby="events-title">
+        <section id="events-section" aria-labelledby="events-title">
             <h2 id="events-title">Saabuvad üritused</h2>
 
             <table>
                 <caption>Ürituste nimekiri</caption>
-
                 <thead>
                     <tr>
                         <th scope="col">Üritus</th>
@@ -40,7 +40,6 @@
                         <th scope="col">Vabu kohti</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     <tr>
                         <th scope="row">Rockikontsert</th>
@@ -49,7 +48,6 @@
                         <td>Tallinn</td>
                         <td>12</td>
                     </tr>
-
                     <tr>
                         <th scope="row">Teatrietendus</th>
                         <td>2026-11-20</td>
@@ -57,7 +55,6 @@
                         <td>Tartu</td>
                         <td>8</td>
                     </tr>
-
                     <tr>
                         <th scope="row">Jazzikontsert</th>
                         <td>2026-12-05</td>
@@ -82,7 +79,6 @@
                         <p>Vabu kohti: 12</p>
                     </article>
                 </li>
-
                 <li>
                     <article aria-labelledby="theatre-title">
                         <h3 id="theatre-title">Teatrietendus</h3>
@@ -92,7 +88,6 @@
                         <p>Vabu kohti: 8</p>
                     </article>
                 </li>
-
                 <li>
                     <article aria-labelledby="jazz-title">
                         <h3 id="jazz-title">Jazzikontsert</h3>
@@ -109,51 +104,30 @@
             <h2 id="search-title">Ürituste otsing</h2>
 
             <form method="get">
-
                 <fieldset>
                     <legend>Otsingufiltrid</legend>
 
                     <p>
                         <label for="from">Alates kuupäevast:</label>
-                        <input
-                            type="date"
-                            id="from"
-                            name="from">
+                        <input type="date" id="from" name="from">
                     </p>
 
                     <p>
-                        <label for="available">
-                            Vähemalt vabu kohti:
-                        </label>
-                        <input
-                            type="number"
-                            id="available"
-                            name="available"
-                            min="1"
-                            max="24">
+                        <label for="available">Vähemalt vabu kohti:</label>
+                        <input type="number" id="available" name="available" min="1" max="24">
                     </p>
 
                     <p>
                         <label for="sort">Sorteerimine:</label>
                         <select id="sort" name="sort">
-                            <option value="date">
-                                Kuupäeva järgi
-                            </option>
-                            <option value="name">
-                                Nime järgi
-                            </option>
-                            <option value="available">
-                                Vabade kohtade järgi
-                            </option>
+                            <option value="date">Kuupäeva järgi</option>
+                            <option value="name">Nime järgi</option>
+                            <option value="available">Vabade kohtade järgi</option>
                         </select>
                     </p>
 
                     <p>
-                        <input
-                            type="checkbox"
-                            id="availableOnly"
-                            name="availableOnly"
-                            value="1">
+                        <input type="checkbox" id="availableOnly" name="availableOnly" value="1">
                         <label for="availableOnly">
                             Näita ainult vabade kohtadega üritusi
                         </label>
@@ -161,17 +135,44 @@
 
                     <p>
                         <label for="email">E-posti aadress:</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email">
+                        <input type="email" id="email" name="email">
                     </p>
 
                     <button type="submit">Otsi üritusi</button>
-
                 </fieldset>
-
             </form>
+        </section>
+
+        <section id="dynamic-events" aria-labelledby="dynamic-title">
+            <h2 id="dynamic-title">Dünaamiline sündmuste nimekiri</h2>
+
+            <p>
+                <label for="event-search">Otsi nime või koha järgi:</label>
+                <input type="search" id="event-search" placeholder="Sisesta otsingusõna">
+            </p>
+
+            <p>
+                <label for="event-sort">Sorteeri:</label>
+                <select id="event-sort">
+                    <option value="name">Nimi</option>
+                    <option value="start">Algusaeg</option>
+                    <option value="free">Vabad kohad</option>
+                </select>
+            </p>
+
+            <p>
+                <label for="event-dir">Järjestus:</label>
+                <select id="event-dir">
+                    <option value="asc">Kasvav</option>
+                    <option value="desc">Kahanev</option>
+                </select>
+            </p>
+
+            <p id="count" role="status" aria-live="polite">
+                Laadin sündmusi…
+            </p>
+
+            <ul id="events" class="cards"></ul>
         </section>
 
     </main>
@@ -179,6 +180,51 @@
     <footer>
         <p>Piletikassa – ürituste ja piletite veebileht</p>
     </footer>
+
+    <script type="module">
+        import { setState } from './view.js';
+
+        const events = [
+            {
+                id: 1,
+                name: 'Rockikontsert',
+                start: '2026-11-15 19:00',
+                venue: 'Tallinn',
+                seats: 100,
+                sold: 88
+            },
+            {
+                id: 2,
+                name: 'Teatrietendus',
+                start: '2026-11-20 18:00',
+                venue: 'Tartu',
+                seats: 80,
+                sold: 72
+            },
+            {
+                id: 3,
+                name: 'Jazzikontsert',
+                start: '2026-12-05 20:00',
+                venue: 'Pärnu',
+                seats: 100,
+                sold: 76
+            }
+        ];
+
+        setState({ events, loading: false });
+
+        document.querySelector('#event-search').addEventListener('input', (event) => {
+            setState({ search: event.target.value });
+        });
+
+        document.querySelector('#event-sort').addEventListener('change', (event) => {
+            setState({ sort: event.target.value });
+        });
+
+        document.querySelector('#event-dir').addEventListener('change', (event) => {
+            setState({ dir: event.target.value });
+        });
+    </script>
 
 </body>
 </html>
