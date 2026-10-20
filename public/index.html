@@ -5,18 +5,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Piletikassa – Üritused</title>
+    <link rel="stylesheet" href="style-1.css">
 </head>
 <body>
+
+    <a class="skip" href="#main-content">Liigu põhisisu juurde</a>
 
     <header>
         <h1>Piletikassa</h1>
         <p>Leia sobiv üritus ja osta pilet!</p>
     </header>
 
-    <main>
+    <nav aria-label="Peamenüü">
+        <a href="#events">Üritused</a>
+        <a href="#featured">Esiletõstetud</a>
+        <a href="#search">Otsing</a>
+    </nav>
 
-        <section>
-            <h2>Saabuvad üritused</h2>
+    <main id="main-content">
+
+        <section id="events" aria-labelledby="events-title">
+            <h2 id="events-title">Saabuvad üritused</h2>
 
             <table>
                 <caption>Ürituste nimekiri</caption>
@@ -33,7 +42,7 @@
 
                 <tbody>
                     <tr>
-                        <td>Rockikontsert</td>
+                        <th scope="row">Rockikontsert</th>
                         <td>2026-11-15</td>
                         <td>19:00</td>
                         <td>Tallinn</td>
@@ -41,7 +50,7 @@
                     </tr>
 
                     <tr>
-                        <td>Teatrietendus</td>
+                        <th scope="row">Teatrietendus</th>
                         <td>2026-11-20</td>
                         <td>18:00</td>
                         <td>Tartu</td>
@@ -49,7 +58,7 @@
                     </tr>
 
                     <tr>
-                        <td>Jazzikontsert</td>
+                        <th scope="row">Jazzikontsert</th>
                         <td>2026-12-05</td>
                         <td>20:00</td>
                         <td>Pärnu</td>
@@ -59,8 +68,44 @@
             </table>
         </section>
 
-        <section>
-            <h2>Ürituste otsing</h2>
+        <section id="featured" aria-labelledby="featured-title">
+            <h2 id="featured-title">Esiletõstetud üritused</h2>
+
+            <ul class="cards">
+                <li>
+                    <article aria-labelledby="rock-title">
+                        <h3 id="rock-title">Rockikontsert</h3>
+                        <p>Kuupäev: 2026-11-15</p>
+                        <p>Algusaeg: 19:00</p>
+                        <p>Koht: Tallinn</p>
+                        <p>Vabu kohti: 12</p>
+                    </article>
+                </li>
+
+                <li>
+                    <article aria-labelledby="theatre-title">
+                        <h3 id="theatre-title">Teatrietendus</h3>
+                        <p>Kuupäev: 2026-11-20</p>
+                        <p>Algusaeg: 18:00</p>
+                        <p>Koht: Tartu</p>
+                        <p>Vabu kohti: 8</p>
+                    </article>
+                </li>
+
+                <li>
+                    <article aria-labelledby="jazz-title">
+                        <h3 id="jazz-title">Jazzikontsert</h3>
+                        <p>Kuupäev: 2026-12-05</p>
+                        <p>Algusaeg: 20:00</p>
+                        <p>Koht: Pärnu</p>
+                        <p>Vabu kohti: 24</p>
+                    </article>
+                </li>
+            </ul>
+        </section>
+
+        <section id="search" aria-labelledby="search-title">
+            <h2 id="search-title">Ürituste otsing</h2>
 
             <form method="get">
 
