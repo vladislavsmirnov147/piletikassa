@@ -98,8 +98,6 @@ Copy as cURL abil saab sama päringu käsurealt uuesti saata.
 
 
 
-\## Kokkuvõte
-
 HTTP päring koosneb neljast osast.
 
 Päised annavad lisainfot päringu kohta.
@@ -107,6 +105,48 @@ Päised annavad lisainfot päringu kohta.
 HTTP on olekuta protokoll.
 
 GET tagastab keha, HEAD keha ei tagasta.
+
+
+
+
+
+\## POST /api/mirror - mõõdetud
+
+
+
+&#x20;   meetod       POST
+
+&#x20;   tee          /api/mirror
+
+&#x20;   Content-Type application/json
+
+&#x20;   keha         {"event":3,"qty":2}
+
+
+
+Server sai JSON-keha ja näitas päiseid.
+
+Päringu keha suurus sõltub saadetud andmetest.
+
+
+
+\## Kokkuvõte
+
+
+
+GET tagastab andmed koos kehaga.
+
+HEAD tagastab päised ilma keha saatmata.
+
+Mõlemal oli staatus 200 ja Content-Length 634.
+
+ETag identifitseerib ressursi versiooni.
+
+Cache-Control: no-cache nõuab enne kasutamist
+
+vastuse kehtivuse kontrollimist.
+
+
 
 
 
