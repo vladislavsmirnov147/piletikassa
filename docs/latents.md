@@ -12,23 +12,23 @@ Kasutasin curl-käsku, et vaadata, kui kiiresti erinevad serverid vastavad.
 
 Mõõtsin kolme aadressi:
 
-\- http://127.0.0.1:3000
+http://127.0.0.1:3000
 
-\- https://ut.ee/et
+https://ut.ee/et
 
-\- https://www.google.com
+https://www.google.com
 
 
 
-| Aadress | DNS (s) | TCP (s) | TLS (s) | TTFB (s) |
+| Aadress                 | DNS (s)           | TCP (s)  | TLS (s)  | TTFB (s) |
 
-|---|---:|---:|---:|---:|
+|-------------------------|-------------------|----------|----------|----------|
 
-| Piletikassa | 0.000363 | 0.000822 | 0.000000 | 0.002439 |
+| Piletikassa             | 0.000363          | 0.000822 | 0.000000 | 0.002439 |
 
-| Tartu Ülikool | 0.064225 | 0.081192 | 0.216221 | 0.289026 |
+| Tartu Ülikool           | 0.064225          | 0.081192 | 0.216221 | 0.289026 |
 
-| Google | 0.066495 | 0.085011 | 0.315709 | 0.535481 |
+| Google                  | 0.066495          | 0.085011 | 0.315709 | 0.535481 |
 
 
 
@@ -60,17 +60,17 @@ Proovisin teha oma kohalikule serverile viis päringut järjest ja siis viis pä
 
 | Päring | Järjest (s) | Paralleelselt (s) |
 
-|---|---:|---:|
+|--------| ------------|-------------------|
 
-| 1 | 0.001709 | 0.002312 |
+| 1      | 0.001709    | 0.002312          |
 
-| 2 | 0.001694 | 0.002663 |
+| 2      | 0.001694    | 0.002663          |
 
-| 3 | 0.001556 | 0.002557 |
+| 3      | 0.001556    | 0.002557          |
 
-| 4 | 0.001440 | 0.002483 |
+| 4      | 0.001440    | 0.002483          |
 
-| 5 | 0.001448 | 0.004197 |
+| 5      | 0.001448    | 0.004197          |
 
 
 
@@ -147,6 +147,4 @@ ei liikunud laadimise ajal ootamatult.
 Performance'i graafikul oli näha, et brauser
 
 tegeleb lehe laadimise, töötlemise ja kuvamisega.
-
-
 
