@@ -103,7 +103,7 @@
         <section id="search" aria-labelledby="search-title">
             <h2 id="search-title">Ürituste otsing</h2>
 
-            <form method="get">
+            <form id="search-form" method="get">
                 <fieldset>
                     <legend>Otsingufiltrid</legend>
 
@@ -147,8 +147,12 @@
             <h2 id="dynamic-title">Dünaamiline sündmuste nimekiri</h2>
 
             <p>
-                <label for="event-search">Otsi nime või koha järgi:</label>
-                <input type="search" id="event-search" placeholder="Sisesta otsingusõna">
+                <label for="search-text">Otsi nime või koha järgi:</label>
+                <input
+                    type="search"
+                    id="search-text"
+                    placeholder="Sisesta otsingusõna">
+                <button type="button" id="clear">Tühjenda</button>
             </p>
 
             <p>
@@ -213,10 +217,6 @@
 
         setState({ events, loading: false });
 
-        document.querySelector('#event-search').addEventListener('input', (event) => {
-            setState({ search: event.target.value });
-        });
-
         document.querySelector('#event-sort').addEventListener('change', (event) => {
             setState({ sort: event.target.value });
         });
@@ -225,6 +225,9 @@
             setState({ dir: event.target.value });
         });
     </script>
+
+    <script type="module" src="./events.js"></script>
+    <script type="module" src="./capture-tool.js"></script>
 
 </body>
 </html>
