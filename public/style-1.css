@@ -1,110 +1,188 @@
-/* C02 Ex1 — ETTE ANTUD laadileht. Nii palju stiili, et fookus ja kontrast oleks
-   kontrollitavad; kaskaad ja žetoonid tulevad ülesandes 3. */
 
-/* Leht on hele — see rida hoiab ära, et brauser ta ise tumedaks pöörab. */
-:root { color-scheme: light; }
+@layer reset, framework, base, components, ours;
 
-body {
-  font-family: system-ui, sans-serif;
-  line-height: 1.5;
-  margin: 0;
-  color: #1a1a1a;
-  background: #fff;
+@layer reset {
+  :where(h1, h2, h3) {
+    margin-block-start: 0;
+  }
 }
 
-/* ★ HÜPPELINK. Esimene fookustatav element lehel; nähtav ainult siis, kui
-   ta fookuse saab. Klaviatuurikasutaja ei pea 30 navilinki läbi tabima. */
-.skip {
-  position: absolute;
-  left: -9999px;
-}
-.skip:focus {
-  position: static;
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  background: #0b3d52;
-  color: #fff;
+@layer framework {
+  .field {
+    border: 2px solid #888;
+  }
 }
 
-/* ★ NÄHTAV FOOKUS. `outline: none` ilma asenduseta on kõige levinum
-   ligipääsetavuse viga. :focus-visible annab ääre klaviatuurile, aga mitte
-   hiireklõpsule. */
-:focus-visible {
-  outline: 3px solid #0b6b8f;
-  outline-offset: 2px;
+@layer base {
+  :root {
+    color-scheme: light;
+
+    --surface: #ffffff;
+    --surface-muted: #f2f5f7;
+    --text: #1a1a1a;
+    --text-muted: #46555e;
+    --line: #d5dde2;
+    --accent: #0b6b8f;
+    --focus: #0b6b8f;
+    --space: 1.5rem;
+    --radius: 4px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+
+      --surface: #171b20;
+      --surface-muted: #252c33;
+      --text: #f2f5f7;
+      --text-muted: #c0cbd3;
+      --line: #53616c;
+      --accent: #8bd9f5;
+      --focus: #8bd9f5;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --surface: #171b20;
+    --surface-muted: #252c33;
+    --text: #f2f5f7;
+    --text-muted: #c0cbd3;
+    --line: #53616c;
+    --accent: #8bd9f5;
+    --focus: #8bd9f5;
+  }
+
+  :root[data-theme="light"] {
+    color-scheme: light;
+
+    --surface: #ffffff;
+    --surface-muted: #f2f5f7;
+    --text: #1a1a1a;
+    --text-muted: #46555e;
+    --line: #d5dde2;
+    --accent: #0b6b8f;
+    --focus: #0b6b8f;
+  }
+
+  body {
+    font-family: system-ui, sans-serif;
+    line-height: 1.5;
+    margin: 0;
+    color: var(--text);
+    background: var(--surface);
+  }
 }
 
-header,
-footer {
-  padding: 1rem 1.5rem;
-  background: #f2f5f7;
-}
-header {
-  display: flex;
-  gap: 1.5rem;
-  align-items: baseline;
-  flex-wrap: wrap;
-}
-.logo {
-  font-weight: 700;
-  margin: 0;
-}
-nav ul {
-  display: flex;
-  gap: 1rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+@layer components {
+  .skip {
+    position: absolute;
+    left: -9999px;
+  }
+
+  .skip:focus {
+    position: static;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: #0b3d52;
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  header,
+  footer {
+    padding: 1rem 1.5rem;
+    background: var(--surface-muted);
+  }
+
+  header {
+    display: flex;
+    gap: var(--space);
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    font-weight: 700;
+    margin: 0;
+  }
+
+  nav ul {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  nav [aria-current="page"] {
+    font-weight: 700;
+    text-decoration-thickness: 2px;
+  }
+
+  main {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: var(--space);
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  caption {
+    text-align: left;
+    padding-block-end: 0.5rem;
+    color: var(--text-muted);
+  }
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-block-end: 1px solid var(--line);
+  }
+
+  thead th {
+    border-block-end-width: 2px;
+  }
+
+  .cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space);
+  }
+
+  .cards > li {
+    flex: 1 1 18rem;
+  }
+
+  .cards img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+  }
+
+  .meta {
+    color: var(--text-muted);
+  }
+
+  :is(h2, h3) {
+    line-height: 1.3;
+  }
 }
 
-/* Praegune leht on märgitud aria-current-iga; anname talle ka nähtava vahe,
-   sest ainult ekraanilugejale märkimine jätab nägija ilma. */
-nav [aria-current="page"] {
-  font-weight: 700;
-  text-decoration-thickness: 2px;
-}
-
-main {
-  max-width: 60rem;
-  margin: 0 auto;
-  padding: 1.5rem;
-}
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-caption {
-  text-align: left;
-  padding-block-end: 0.5rem;
-  color: #46555e; /* kontrast valgel 7,72:1 — mõõdetud, mitte arvatud */
-}
-th,
-td {
-  text-align: left;
-  padding: 0.5rem 0.75rem;
-  border-block-end: 1px solid #d5dde2;
-}
-thead th {
-  border-block-end-width: 2px;
-}
-
-.cards {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-}
-.cards > li {
-  flex: 1 1 18rem;
-}
-.cards img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 4px;
-}
-.meta {
-  color: #46555e;
+@layer ours {
+  .field {
+    border: 2px solid var(--accent);
+  }
 }
