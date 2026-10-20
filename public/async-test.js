@@ -1,0 +1,1 @@
+console.log('async: skript käivitus');

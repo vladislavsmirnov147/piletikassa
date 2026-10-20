@@ -7,6 +7,14 @@
     <title>Piletikassa – Üritused</title>
     <link rel="stylesheet" href="style-1.css">
     <link rel="stylesheet" href="layout.css">
+
+    <script type="importmap">
+    {
+        "imports": {
+            "piletikaart": "./ticket-card.js"
+        }
+    }
+    </script>
 </head>
 <body>
 
@@ -22,6 +30,7 @@
         <a href="#featured">Esiletõstetud</a>
         <a href="#search">Otsing</a>
         <a href="#dynamic-events">Dünaamiline nimekiri</a>
+        <a href="#web-components">Veebikomponendid</a>
     </nav>
 
     <main id="main-content">
@@ -179,6 +188,40 @@
             <ul id="events" class="cards"></ul>
         </section>
 
+        <section id="web-components" aria-labelledby="components-title">
+            <h2 id="components-title">Veebikomponendid</h2>
+
+            <p>Need sündmusekaardid on loodud veebikomponendiga.</p>
+
+            <div class="cards">
+                <ticket-card
+                    data-id="1"
+                    name="Rockikontsert"
+                    date="2026-11-15 19:00"
+                    venue="Tallinn"
+                    available="12">
+                </ticket-card>
+
+                <ticket-card
+                    data-id="2"
+                    name="Teatrietendus"
+                    date="2026-11-20 18:00"
+                    venue="Tartu"
+                    available="8">
+                </ticket-card>
+
+                <ticket-card
+                    data-id="3"
+                    name="Jazzikontsert"
+                    date="2026-12-05 20:00"
+                    venue="Pärnu"
+                    available="24">
+                </ticket-card>
+            </div>
+
+            <p id="ticket-message" role="status" aria-live="polite"></p>
+        </section>
+
     </main>
 
     <footer>
@@ -224,10 +267,34 @@
         document.querySelector('#event-dir').addEventListener('change', (event) => {
             setState({ dir: event.target.value });
         });
+
+        document.querySelector('#web-components').addEventListener('ticket-select', (event) => {
+            const { id, name } = event.detail;
+
+            document.querySelector('#ticket-message').textContent =
+                `Valisid sündmuse: ${name} (ID: ${id})`;
+        });
     </script>
 
     <script type="module" src="./events.js"></script>
     <script type="module" src="./capture-tool.js"></script>
+
+    <script type="module">
+        import 'piletikaart';
+        console.log('Moodul laaditud import map abil');
+    </script>
+
+    <script defer src="./defer-test.js"></script>
+    <script async src="./async-test.js"></script>
+    <script type="module" src="./module-test.js"></script>
+
+    <script>
+        try {
+            console.log(moduleMessage);
+        } catch (error) {
+            console.log('Mooduli muutuja ei ole globaalne:', error.name);
+        }
+    </script>
 
 </body>
 </html>

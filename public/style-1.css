@@ -120,11 +120,6 @@
     padding: 0;
   }
 
-  nav [aria-current="page"] {
-    font-weight: 700;
-    text-decoration-thickness: 2px;
-  }
-
   main {
     max-width: 60rem;
     margin: 0 auto;
@@ -185,4 +180,8 @@
   .field {
     border: 2px solid var(--accent);
   }
+}
+
+h3 {
+  color: red;
 }
