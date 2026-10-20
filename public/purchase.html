@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piletikassa – Pileti ostmine</title>
+    <link rel="stylesheet" href="style-1.css">
+</head>
+<body>
+
+    <a class="skip" href="#main-content">Liigu põhisisu juurde</a>
+
+    <header>
+        <h1>Piletikassa</h1>
+        <p>Pileti ostmine</p>
+    </header>
+
+    <nav aria-label="Peamenüü">
+        <a href="index.html">Üritused</a>
+        <a href="purchase.html" aria-current="page">Pileti ostmine</a>
+    </nav>
+
+    <main id="main-content">
+        <h2>Ostuvorm</h2>
+
+        <form id="purchase-form" novalidate>
+
+            <fieldset>
+                <legend>Ostja andmed</legend>
+
+                <p>
+                    <label for="first-name">Eesnimi</label>
+                    <input type="text" id="first-name" name="firstName"
+                           required minlength="2"
+                           aria-describedby="first-name-error">
+                    <span id="first-name-error" aria-live="polite"></span>
+                </p>
+
+                <p>
+                    <label for="last-name">Perekonnanimi</label>
+                    <input type="text" id="last-name" name="lastName"
+                           required minlength="2"
+                           aria-describedby="last-name-error">
+                    <span id="last-name-error" aria-live="polite"></span>
+                </p>
+
+                <p>
+                    <label for="email">E-post</label>
+                    <input type="email" id="email" name="email"
+                           required aria-describedby="email-error">
+                    <span id="email-error" aria-live="polite"></span>
+                </p>
+
+                <p>
+                    <label for="email-confirm">Korda e-posti</label>
+                    <input type="email" id="email-confirm" name="emailConfirm"
+                           required aria-describedby="email-confirm-error">
+                    <span id="email-confirm-error" aria-live="polite"></span>
+                </p>
+            </fieldset>
+
+            <fieldset>
+                <legend>Pileti andmed</legend>
+
+                <p>
+                    <label for="event">Üritus</label>
+                    <select id="event" name="event"
+                            required aria-describedby="event-error">
+                        <option value="">Vali üritus</option>
+                        <option value="rock">Rockikontsert</option>
+                        <option value="theatre">Teatrietendus</option>
+                        <option value="jazz">Jazzikontsert</option>
+                    </select>
+                    <span id="event-error" aria-live="polite"></span>
+                </p>
+
+                <p>
+                    <label for="quantity">Piletite arv</label>
+                    <input type="number" id="quantity" name="quantity"
+                           required min="1" max="6" step="1"
+                           aria-describedby="quantity-error">
+                    <span id="quantity-error" aria-live="polite"></span>
+                </p>
+
+                <p>
+                    <label for="date">Külastuse kuupäev</label>
+                    <input type="date" id="date" name="date"
+                           required aria-describedby="date-error">
+                    <span id="date-error" aria-live="polite"></span>
+                </p>
+
+                <p>
+                    <label for="phone">Telefoninumber</label>
+                    <input type="tel" id="phone" name="phone"
+                           required pattern="[0-9]{7,12}"
+                           aria-describedby="phone-error">
+                    <span id="phone-error" aria-live="polite"></span>
+                </p>
+            </fieldset>
+
+            <button type="submit">Osta pilet</button>
+        </form>
+    </main>
+
+    <footer>
+        <p>Piletikassa – ürituste ja piletite veebileht</p>
+    </footer>
+
+    <script src="purchase.js" defer></script>
+</body>
+</html>
