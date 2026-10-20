@@ -1,0 +1,39 @@
+
+Ülesanne 5 – Esileht ja GET-vorm
+
+Tegin Piletikassa jaoks lihtsa HTML-lehe.
+Lehel on pealkiri, kolme üritusega tabel ja otsinguvorm.
+
+Tabelisse lisasin kolm näidisüritust. Iga ürituse
+juures on kuupäev, algusaeg, koht ja vabade kohtade arv.
+
+Otsinguvormi lisasin kuupäeva valiku, vabade kohtade
+arvu, sorteerimise, märkeruudu ja e-posti välja.
+Kasutasin ka fieldset- ja legend-elemente ning
+panin väljadele sildid.
+
+Proovisin vormi brauseris ja vaatasin, mis juhtub
+pärast otsingunupu vajutamist.
+
+GET-meetodiga ilmusid sisestatud andmed aadressiribale.
+Näiteks proovisin kuupäeva 2026-10-22, vabade kohtade
+arvu 2 ja e-posti aadressi test@example.com.
+
+Kontrollisin ka arvuvälja. Kui sisestasin 0,
+näitas brauser veateadet, sest lubatud arv peab
+olema vähemalt 1.
+
+Proovisin korraks ka POST-meetodit. Sain aru, et
+GET lisab andmed URL-i, aga POST saadab need päringu
+kehas. Kuna mul ei ole veel serverit, ei saanud
+POST-päringut tavapäraselt töödelda.
+
+Lõpuks muutsin vormi tagasi GET-meetodile.
+
+
+
+Kontrollisin oma HTML-faili ka W3C validaatoriga.
+Alguses näitas see ühte viga ja ühte hoiatust.
+Parandasin vormi action-atribuudi ja eemaldasin tabeli vana border-atribuudi.
+Pärast seda kontrollisin faili uuesti ja enam vigu ega hoiatusi ei olnud.
+  

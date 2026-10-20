@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piletikassa – Üritused</title>
+</head>
+<body>
+
+    <header>
+        <h1>Piletikassa</h1>
+        <p>Leia sobiv üritus ja osta pilet!</p>
+    </header>
+
+    <main>
+
+        <section>
+            <h2>Saabuvad üritused</h2>
+
+            <table>
+                <caption>Ürituste nimekiri</caption>
+
+                <thead>
+                    <tr>
+                        <th scope="col">Üritus</th>
+                        <th scope="col">Kuupäev</th>
+                        <th scope="col">Algusaeg</th>
+                        <th scope="col">Koht</th>
+                        <th scope="col">Vabu kohti</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Rockikontsert</td>
+                        <td>2026-11-15</td>
+                        <td>19:00</td>
+                        <td>Tallinn</td>
+                        <td>12</td>
+                    </tr>
+
+                    <tr>
+                        <td>Teatrietendus</td>
+                        <td>2026-11-20</td>
+                        <td>18:00</td>
+                        <td>Tartu</td>
+                        <td>8</td>
+                    </tr>
+
+                    <tr>
+                        <td>Jazzikontsert</td>
+                        <td>2026-12-05</td>
+                        <td>20:00</td>
+                        <td>Pärnu</td>
+                        <td>24</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Ürituste otsing</h2>
+
+            <form method="get">
+
+                <fieldset>
+                    <legend>Otsingufiltrid</legend>
+
+                    <p>
+                        <label for="from">Alates kuupäevast:</label>
+                        <input
+                            type="date"
+                            id="from"
+                            name="from">
+                    </p>
+
+                    <p>
+                        <label for="available">
+                            Vähemalt vabu kohti:
+                        </label>
+                        <input
+                            type="number"
+                            id="available"
+                            name="available"
+                            min="1"
+                            max="24">
+                    </p>
+
+                    <p>
+                        <label for="sort">Sorteerimine:</label>
+                        <select id="sort" name="sort">
+                            <option value="date">
+                                Kuupäeva järgi
+                            </option>
+                            <option value="name">
+                                Nime järgi
+                            </option>
+                            <option value="available">
+                                Vabade kohtade järgi
+                            </option>
+                        </select>
+                    </p>
+
+                    <p>
+                        <input
+                            type="checkbox"
+                            id="availableOnly"
+                            name="availableOnly"
+                            value="1">
+                        <label for="availableOnly">
+                            Näita ainult vabade kohtadega üritusi
+                        </label>
+                    </p>
+
+                    <p>
+                        <label for="email">E-posti aadress:</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email">
+                    </p>
+
+                    <button type="submit">Otsi üritusi</button>
+
+                </fieldset>
+
+            </form>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Piletikassa – ürituste ja piletite veebileht</p>
+    </footer>
+
+</body>
+</html>
