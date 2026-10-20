@@ -1,5 +1,7 @@
 
 import { setState } from './view.js';
+import { read, remove } from './draft.js';
+import { saveLater, cancelSave } from './storage-extra.js';
 
 const eventsList = document.querySelector('#events');
 const searchForm = document.querySelector('#search-form');
@@ -24,6 +26,30 @@ eventsList.addEventListener('click', (event) => {
     }
 });
 
+const savedDraft = read();
+
+if (savedDraft) {
+    for (const element of searchForm.elements) {
+        if (!element.name || !(element.name in savedDraft)) {
+            continue;
+        }
+
+        if (element.type === 'checkbox') {
+            element.checked = savedDraft[element.name] === element.value;
+        } else if (element.type !== 'submit') {
+            element.value = savedDraft[element.name];
+        }
+    }
+}
+
+const saveDraft = () => {
+    const data = Object.fromEntries(new FormData(searchForm));
+    saveLater(data);
+};
+
+searchForm.addEventListener('input', saveDraft);
+searchForm.addEventListener('change', saveDraft);
+
 searchForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
@@ -35,6 +61,9 @@ searchForm.addEventListener('submit', (event) => {
     const data = Object.fromEntries(new FormData(searchForm));
 
     console.log('Vormi andmed:', data);
+
+    cancelSave();
+    remove();
 });
 
 let searchTimer;
