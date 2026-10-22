@@ -1,0 +1,81 @@
+
+### C07 Ülesanne 5 — OpenAPI leping ja lepingutestid
+### Piletikassa: POST /orders
+### Kolm päringut: 201, 422 ja 409
+###
+### Need on lepingu järgi koostatud näidispäringud.
+### Oodatud vastused on näited, mitte pärisserveri mõõdetud tulemused.
+
+@baseUrl = http://localhost:3000/api/v1
+
+### 1. Edukas tellimus — 201 Created
+### Kõik kohustuslikud väljad on olemas.
+### Vastuses peab olema Location-päis.
+
+POST {{baseUrl}}/orders
+Content-Type: application/json
+
+{
+  "event": 3,
+  "qty": 2,
+  "buyer": "Mari Maasikas",
+  "email": "mari@example.ee"
+}
+
+### Oodatud vastus: 201 Created
+### Location: /api/orders/7001
+###
+### {
+###   "id": 7001,
+###   "event": 3,
+###   "qty": 2,
+###   "createdAt": "2026-09-06T10:00:00Z"
+### }
+
+
+### 2. Vigane sisend — 422 Unprocessable Entity
+### qty ei tohi olla 0.
+### OrderSchema kontrollib sisendi välju.
+
+POST {{baseUrl}}/orders
+Content-Type: application/json
+
+{
+  "event": 3,
+  "qty": 0,
+  "buyer": "Mari Maasikas",
+  "email": "mari@example.ee"
+}
+
+### Oodatud vastus: 422
+###
+### {
+###   "err": "Vigane sisend",
+###   "code": "INVALID_INPUT",
+###   "fields": {
+###     "qty": "Vigane piletite arv"
+###   }
+### }
+
+
+### 3. Vabu kohti ei jätku — 409 Conflict
+### Tellitakse rohkem pileteid kui vabu kohti.
+### See on teenuse ärireegli viga.
+
+POST {{baseUrl}}/orders
+Content-Type: application/json
+
+{
+  "event": 3,
+  "qty": 10,
+  "buyer": "Mari Maasikas",
+  "email": "mari@example.ee"
+}
+
+### Oodatud vastus: 409 Conflict
+### Ainult juhul, kui sündmusel on alla 10 vaba koha.
+###
+### {
+###   "err": "Vabu kohti ei jätku.",
+###   "code": "CONFLICT"
+### }
