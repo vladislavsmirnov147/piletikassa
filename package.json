@@ -1,4 +1,12 @@
+
 {
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch --env-file=.env server.js",
+    "test": "node materials/check-app.js",
+    "audit": "npm audit"
+  },
   "devDependencies": {
     "bootstrap": "^5.3.8",
     "sass": "^1.105.2"

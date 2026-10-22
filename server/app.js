@@ -6,10 +6,8 @@ import { eventsRouter, ordersRouter } from './routes.js';
 
 import { logger } from '../materials/logger.js';
 import { notFound } from '../materials/express-helpers.js';
-import {
-  errorHandler,
-  simpleResponse
-} from '../materials/error-middleware.js';
+import { errorHandler } from '../materials/error-middleware.js';
+import { makeErrorResponse } from './errors.js';
 
 // Expressi rakendus ja vahevara ahel.
 export function createApp(store, { log = console.log } = {}) {
@@ -41,7 +39,13 @@ export function createApp(store, { log = console.log } = {}) {
 
   // 8. Veakäsitleja on ahela lõpus.
   // Nelja parameetriga käsitleja tunneb Express ära.
-  app.use(errorHandler(simpleResponse, log));
+  // Arenduses näidatakse veapinu, tootmises peidetakse.
+  app.use(errorHandler(
+    makeErrorResponse({
+      isDev: process.env.NODE_ENV !== 'production'
+    }),
+    log
+  ));
 
   return app;
 }
