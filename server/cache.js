@@ -1,165 +1,196 @@
-import { createHash } from 'node:crypto';
 
-function stableStringify(value) {
-    if (value === null || typeof value !== 'object') {
-        return JSON.stringify(value);
+/*
+ * C08 Ülesanne 5 — Tagasisurve ja serveri vahemälu
+ * Piletikassa
+ */
+
+// 1. Tagasisurve strateegiate kirjeldused
+export const STRATEGIES = {
+  drop_new: {
+    loses: 'uued teated',
+    fits: 'olulised vanemad teated'
+  },
+  drop_old: {
+    loses: 'vanad teated',
+    fits: 'värskemad reaalaja uuendused'
+  },
+  last_only: {
+    loses: 'vahepealsed seisud',
+    fits: 'hetkeseis, näiteks kohtade saadavus'
+  },
+  buffer: {
+    loses: 'mitte midagi',
+    fits: 'tootmises mitte kunagi piiramatu puhvrina'
+  }
+};
+
+// 2. Aeglase kliendi teadete järjekord
+export function createStream({
+  strategy = 'drop_old',
+  cap = 3,
+  send = () => {}
+} = {}) {
+  if (!Object.hasOwn(STRATEGIES, strategy)) {
+    throw new RangeError('Tundmatu strateegia');
+  }
+
+  const queue = [];
+  let lostCount = 0;
+
+  return {
+    add(message) {
+      if (strategy === 'last_only') {
+        lostCount += queue.length;
+        queue.length = 0;
+        queue.push(message);
+        return;
+      }
+
+      if (strategy === 'buffer') {
+        queue.push(message);
+        return;
+      }
+
+      if (queue.length < cap) {
+        queue.push(message);
+        return;
+      }
+
+      if (strategy === 'drop_new') {
+        lostCount++;
+        return;
+      }
+
+      if (strategy === 'drop_old') {
+        queue.shift();
+        lostCount++;
+        queue.push(message);
+      }
+    },
+
+    pending() {
+      return queue.length;
+    },
+
+    lost() {
+      return lostCount;
+    },
+
+    clear(limit = Infinity) {
+      let count = 0;
+
+      while (queue.length > 0 && count < limit) {
+        send(queue.shift());
+        count++;
+      }
+
+      return count;
     }
-
-    if (Array.isArray(value)) {
-        return '[' + value.map(stableStringify).join(',') + ']';
-    }
-
-    const keys = Object.keys(value).sort();
-
-    return '{' + keys.map(key =>
-        JSON.stringify(key) + ':' + stableStringify(value[key])
-    ).join(',') + '}';
+  };
 }
 
-export function stateTag(obj) {
-    return '"' + createHash('sha256')
-        .update(stableStringify(obj))
-        .digest('hex')
-        .slice(0, 16) + '"';
+// 3. WebSocket-kliendi sulgemine suure puhvri korral
+export function shouldClose(bufferedAmount) {
+  return bufferedAmount > 1024 * 1024;
 }
 
-function normalizeTag(tag) {
-    return String(tag).trim().replace(/^W\//, '');
-}
+// 4. Serveri vahemälu: TTL, LRU ja sildid
+export function createCache({
+  ttl = 300_000,
+  cap = 100,
+  clock = () => Date.now()
+} = {}) {
+  const entries = new Map();
+  let hits = 0;
+  let misses = 0;
 
-function unquoteTag(tag) {
-    return normalizeTag(tag).replace(/^"(.*)"$/, '$1');
-}
+  return {
+    read(key) {
+      const entry = entries.get(key);
 
-export function tagsEqual(a, b, { weak = false } = {}) {
-    const left = String(a ?? '').split(',').map(s => s.trim());
-    const right = String(b ?? '').split(',').map(s => s.trim());
+      if (!entry) {
+        misses++;
+        return undefined;
+      }
 
-    if (left.includes('*') || right.includes('*')) {
-        return true;
-    }
+      if (clock() >= entry.expiresAt) {
+        entries.delete(key);
+        misses++;
+        return undefined;
+      }
 
-    return left.some(x => right.some(y => {
-        if (!x || !y) return false;
+      // LRU: loetud kirje muutub kõige uuemaks.
+      entries.delete(key);
+      entries.set(key, entry);
+      hits++;
 
-        if (weak) {
-            return unquoteTag(x) === unquoteTag(y);
+      return entry.value;
+    },
+
+    write(key, value, tags = []) {
+      entries.delete(key);
+
+      entries.set(key, {
+        value,
+        tags: [...tags],
+        expiresAt: clock() + ttl
+      });
+
+      // Kui maht ületab piiri, eemaldame vanima kirje.
+      while (entries.size > cap) {
+        const oldest = entries.keys().next().value;
+        entries.delete(oldest);
+      }
+    },
+
+    evictTag(tag) {
+      let removed = 0;
+
+      for (const [key, entry] of entries) {
+        if (entry.tags.includes(tag)) {
+          entries.delete(key);
+          removed++;
         }
+      }
 
-        return x === y ||
-            (unquoteTag(x) === unquoteTag(y) &&
-             !x.startsWith('W/') && !y.startsWith('W/'));
-    }));
-}
+      return removed;
+    },
 
-function getHeader(headers, name) {
-    const key = Object.keys(headers || {}).find(
-        k => k.toLowerCase() === name.toLowerCase()
-    );
+    size() {
+      return entries.size;
+    },
 
-    return key === undefined ? undefined : headers[key];
-}
-
-function quotedTag(resource) {
-    return stateTag(resource);
-}
-
-export function httpDate(time) {
-    const date = time instanceof Date ? time : new Date(time);
-
-    if (Number.isNaN(date.getTime())) {
-        throw new RangeError('Invalid date');
+    stats() {
+      return { hits, misses };
     }
-
-    return date.toUTCString();
+  };
 }
 
-export function cacheHeader(kind) {
-    const values = {
-        immutable: 'public, max-age=31536000, immutable',
-        short: 'public, max-age=60',
-        revalidate: 'no-cache',
-        secret: 'no-store, private'
-    };
-
-    if (!Object.hasOwn(values, kind)) {
-        throw new RangeError('Unknown cache kind');
-    }
-
-    return values[kind];
-}
-
-export function answerRead(headers, resource, { modified } = {}) {
-    const etag = quotedTag(resource);
-    const responseHeaders = {
-        ETag: etag,
-        'Cache-Control': cacheHeader('revalidate')
-    };
-
-    if (modified !== undefined) {
-        responseHeaders['Last-Modified'] = httpDate(modified);
-    }
-
-    const ifNoneMatch = getHeader(headers, 'if-none-match');
-    const ifModifiedSince = getHeader(headers, 'if-modified-since');
-
-    if (ifNoneMatch !== undefined) {
-        if (tagsEqual(ifNoneMatch, etag, { weak: true })) {
-            return { code: 304, headers: responseHeaders, body: null };
-        }
-    } else if (modified !== undefined && ifModifiedSince !== undefined) {
-        const since = Date.parse(ifModifiedSince);
-        const lastModified = new Date(modified).getTime();
-
-        if (Number.isFinite(since) &&
-            lastModified <= since) {
-            return { code: 304, headers: responseHeaders, body: null };
-        }
-    }
-
+// 5. Otsus, kas andmeid võib jagatud vahemällu panna
+export function mayCache({
+  secret = false,
+  perUser = false,
+  changesOften = false
+} = {}) {
+  if (secret) {
     return {
-        code: 200,
-        headers: responseHeaders,
-        body: resource
+      allowed: false,
+      reason: 'Salajasi andmeid ei tohi jagatud vahemällu salvestada.',
+      ttl: 0
     };
-}
+  }
 
-export function answerWrite(headers, resource, change) {
-    const ifMatch = getHeader(headers, 'if-match');
-
-    if (ifMatch === undefined) {
-        return {
-            code: 428,
-            headers: {},
-            body: { error: 'If-Match required' }
-        };
-    }
-
-    const currentTag = quotedTag(resource);
-    const tags = String(ifMatch).split(',').map(tag => tag.trim());
-
-    const matched = tags.some(tag => {
-        if (tag === '*') return true;
-        if (tag.startsWith('W/')) return false;
-
-        return tagsEqual(tag, currentTag);
-    });
-
-    if (!matched) {
-        return {
-            code: 412,
-            headers: { ETag: currentTag },
-            body: { error: 'Precondition failed' }
-        };
-    }
-
-    const updated = { ...resource, ...change };
-
-    Object.assign(resource, updated);
-
+  if (perUser) {
     return {
-        code: 200,
-        headers: { ETag: quotedTag(updated) },
-        body: updated
+      allowed: false,
+      reason: 'Kasutajapõhised andmed ei sobi jagatud vahemällu, sest need võivad põhjustada andmete lekke.',
+      ttl: 0
     };
+  }
+
+  return {
+    allowed: true,
+    reason: 'Avalikke andmeid võib vahemällu salvestada.',
+    ttl: changesOften ? 5_000 : 300_000
+  };
 }
