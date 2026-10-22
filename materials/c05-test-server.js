@@ -1,5 +1,5 @@
-// C05 Ex3 — abiserver nelja vastuse katsetamiseks
-// See on eraldi testiserver. C04 server.js jääb muutmata.
+// C05 Ex3 ja Ex4 — eraldi testiserver
+// C04 server.js jääb muutmata.
 
 import http from 'node:http';
 
@@ -10,6 +10,8 @@ const events = [
   { id: 2, name: 'Talveball', price: 45 },
   { id: 3, name: 'Improteater', price: 15 }
 ];
+
+let retryCount = 0;
 
 function send(res, status, body, type = 'application/json') {
   const content = Buffer.from(body, 'utf8');
@@ -30,19 +32,43 @@ const server = http.createServer(async (req, res) => {
     return send(res, 404, JSON.stringify({ error: 'Ei leitud' }));
   }
 
+  // C05 Ex4: iga kolmas päring õnnestub
+  if (url.searchParams.has('retry')) {
+    retryCount++;
+
+    const status = retryCount % 3 === 0 ? 200 : 503;
+
+    console.log(`?retry katse ${retryCount}: HTTP ${status}`);
+
+    if (status === 503) {
+      return send(res, 503, JSON.stringify({
+        error: 'Server on ajutiselt hõivatud'
+      }));
+    }
+
+    return send(res, 200, JSON.stringify(events));
+  }
+
+  // C05 Ex3: aeglane vastus
   if (url.searchParams.has('slow')) {
     const ms = Number(url.searchParams.get('slow'));
+
     await new Promise(resolve => setTimeout(resolve, ms));
   }
 
+  // C05 Ex3: serveriviga
   if (url.searchParams.has('err')) {
-    return send(res, 500, JSON.stringify({ error: 'Serveri viga' }));
+    return send(res, 500, JSON.stringify({
+      error: 'Serveri viga'
+    }));
   }
 
+  // C05 Ex3: vigane JSON
   if (url.searchParams.has('broken')) {
-    return send(res, 200, '{"events": [', 'application/json');
+    return send(res, 200, '{"events": [');
   }
 
+  // C05 Ex3: tühi nimekiri
   if (url.searchParams.has('empty')) {
     return send(res, 200, '[]');
   }
